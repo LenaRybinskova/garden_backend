@@ -8,10 +8,14 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
-model Lena {
-  id   String @id @default(uuid())
-  name String
+model Users {
+  id       String @id @default(uuid())
+  login    String
+  email    String @unique
+  password String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("Users")
 }
