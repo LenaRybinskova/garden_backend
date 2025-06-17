@@ -17,6 +17,8 @@ import { AuthGuard } from '@nestjs/passport';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+
+
   @Post('register')
   async registration(
     @Res({ passthrough: true }) res: Response,
