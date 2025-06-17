@@ -6,6 +6,8 @@ import { RegisterDto } from 'src/auth/dto/registration.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { hash, verify } from 'argon2';
 import { LoginDto } from 'src/auth/dto/login.dto';
+import { Response } from 'express';
+import { isDev } from 'src/utils/isDev.util';
 
 
 @Injectable()
@@ -13,6 +15,7 @@ export class AuthService {
   private readonly JWT_SECRET: string;
   private readonly JWT_ACCESS_TOKEN_TTL: string;
   private readonly JWT_REFRESH_TOKEN_TTL: string;
+  private readonly COOKIE_DOMAIN: string;
 
   constructor(
     private readonly prismaService: PrismaService,
@@ -25,6 +28,9 @@ export class AuthService {
     );
     this.JWT_REFRESH_TOKEN_TTL = this.configService.getOrThrow(
       'JWT_REFRESH_TOKEN_TTL',
+    );
+    this.COOKIE_DOMAIN = this.configService.getOrThrow(
+      'COOKIE_DOMAIN',
     );
   }
 
@@ -42,7 +48,30 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async registration(dto: RegisterDto) {
+  // устанавливает рефреш токен в куку c response
+  private setCookie(res: Response, refreshToken: string, expires: Date) {
+    res.cookie('token', refreshToken, {
+      httpOnly: true,
+      domain: this.COOKIE_DOMAIN,
+      expires,
+      secure: !isDev(this.configService), //флаг если isDev=true то кука цепл и на http и на https, false только на https
+      sameSite: isDev(this.configService) ? 'none' : 'lax', //если isDev=true то с любого домена на запрос будет веш кука
+    });
+  }
+
+  // оформляет респонст ( рефр в куку, аксесс в пейлод)
+  private async  auth(res: Response, id: string) {
+    const { refreshToken, accessToken } = await this.generateTokens(id);
+    this.setCookie(
+      res,
+      refreshToken,
+      new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+    )
+    return { accessToken }
+  }
+
+
+  async registration(res: Response, dto: RegisterDto) {
     const { login, email, password } = dto;
 
     const existUser = await this.prismaService.users.findUnique({
@@ -57,10 +86,11 @@ export class AuthService {
       data: { login, email, password: await hash(password) },
     });
 
-    return this.generateTokens(user.id);
+    return this.auth(res,user.id );
   }
 
-  async login(dto: LoginDto) {
+
+  async login(res: Response, dto: LoginDto) {
     const { email, password } = dto;
 
     const existUser = await this.prismaService.users.findUnique({
@@ -77,10 +107,6 @@ export class AuthService {
       throw new NotFoundException('User not exists'); //404
     }
 
-    return this.generateTokens(existUser.id);
-  }
-
-  async refreshToken(){
-
+    return this.auth(res,existUser.id );
   }
 }
