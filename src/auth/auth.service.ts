@@ -1,4 +1,9 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -6,9 +11,9 @@ import { RegisterDto } from 'src/auth/dto/registration.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { hash, verify } from 'argon2';
 import { LoginDto } from 'src/auth/dto/login.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { isDev } from 'src/utils/isDev.util';
-
+import { JwtPayload } from 'src/auth/interfaces/jwt.interfaces';
 
 @Injectable()
 export class AuthService {
@@ -29,9 +34,24 @@ export class AuthService {
     this.JWT_REFRESH_TOKEN_TTL = this.configService.getOrThrow(
       'JWT_REFRESH_TOKEN_TTL',
     );
-    this.COOKIE_DOMAIN = this.configService.getOrThrow(
-      'COOKIE_DOMAIN',
-    );
+    this.COOKIE_DOMAIN = this.configService.getOrThrow('COOKIE_DOMAIN');
+  }
+
+  //поиск юзера по ID
+  async validateUser(id: string) {
+    const user = await this.prismaService.users.findUnique({
+      where: { id },
+      select: {
+        login: true,
+        email: true,
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    return user;
   }
 
   //генеровать токена на основе ID юзера
@@ -50,7 +70,7 @@ export class AuthService {
 
   // устанавливает рефреш токен в куку c response
   private setCookie(res: Response, refreshToken: string, expires: Date) {
-    res.cookie('token', refreshToken, {
+    res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       domain: this.COOKIE_DOMAIN,
       expires,
@@ -60,16 +80,15 @@ export class AuthService {
   }
 
   // оформляет респонст ( рефр в куку, аксесс в пейлод)
-  private async  auth(res: Response, id: string) {
+  private async auth(res: Response, id: string) {
     const { refreshToken, accessToken } = await this.generateTokens(id);
     this.setCookie(
       res,
       refreshToken,
       new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-    )
-    return { accessToken }
+    );
+    return { accessToken };
   }
-
 
   async registration(res: Response, dto: RegisterDto) {
     const { login, email, password } = dto;
@@ -86,9 +105,8 @@ export class AuthService {
       data: { login, email, password: await hash(password) },
     });
 
-    return this.auth(res,user.id );
+    return this.auth(res, user.id);
   }
-
 
   async login(res: Response, dto: LoginDto) {
     const { email, password } = dto;
@@ -107,6 +125,36 @@ export class AuthService {
       throw new NotFoundException('User not exists'); //404
     }
 
-    return this.auth(res,existUser.id );
+    return this.auth(res, existUser.id);
+  }
+
+  //исп для генер токенов если аксесс просроч -> проверка -> генер новая пара токенов
+  async refresh(req: Request, res: Response) {
+    const refreshToken = req.cookies['refreshToken'];
+
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token отсутствует');
+    }
+
+    const payload: JwtPayload = await this.jwtService.verifyAsync(refreshToken);
+
+    const user = await this.prismaService.users.findUnique({
+      where: { id: payload.id },
+      select: { id: true },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException(
+        'Проблемы с refresh token, нет такого пользователя',
+      );
+    }
+
+    return this.auth(res, user.id);
+  }
+
+  // просто затирает в куке данные о рефр токене
+  async logout(res: Response) {
+    this.setCookie(res, 'refreshToken', new Date(0));
+    return true;
   }
 }
