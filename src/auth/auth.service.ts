@@ -17,7 +17,6 @@ import { JwtPayload } from 'src/auth/interfaces/jwt.interfaces';
 
 @Injectable()
 export class AuthService {
-  private readonly JWT_SECRET: string;
   private readonly JWT_ACCESS_TOKEN_TTL: string;
   private readonly JWT_REFRESH_TOKEN_TTL: string;
   private readonly COOKIE_DOMAIN: string;
@@ -27,7 +26,6 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
   ) {
-    this.JWT_SECRET = this.configService.getOrThrow('JWT_SECRET');
     this.JWT_ACCESS_TOKEN_TTL = this.configService.getOrThrow(
       'JWT_ACCESS_TOKEN_TTL',
     );
@@ -98,7 +96,7 @@ export class AuthService {
     });
 
     if (existUser) {
-      throw new ConflictException('Email already exists'); //409
+      throw new ConflictException('Email already exists'); //409 HttpStatus.CONFLICT
     }
 
     const user = await this.prismaService.users.create({
