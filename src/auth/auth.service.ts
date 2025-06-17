@@ -96,7 +96,7 @@ export class AuthService {
     });
 
     if (existUser) {
-      throw new ConflictException('Email already exists'); //409
+      throw new ConflictException('Email already exists'); //409 HttpStatus.CONFLICT
     }
 
     const user = await this.prismaService.users.create({

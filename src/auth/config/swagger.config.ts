@@ -10,5 +10,16 @@ export function getSwaggerConfig() {
       'https://github.com/LenaRybinskova/garden_backend',
       'lenaRybinskova@gmail.com',
     )
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'Authorization',
+        description: 'В заголовках должно быть Authorization: Bearer <token>',
+        in: 'header',
+      },
+      'Bearer',
+    )
     .build();
 }
