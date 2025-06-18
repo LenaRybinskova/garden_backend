@@ -5,7 +5,6 @@ import { JwtPayload } from 'src/auth/interfaces/jwt.interfaces';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 
-
 // эта стратегия проверяет, что в заголовке есть валидный аксесс токен, через @UseGuards(AuthGuard('jwt'))
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

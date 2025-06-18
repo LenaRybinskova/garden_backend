@@ -94,7 +94,7 @@ model PhotoPackage {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Plants Plants? // ЭТО поле-связь для One-to-One
+  Plants Plants? @relation // ЭТО поле-связь для One-to-One
 
   @@map("Photo_Package")
 }

@@ -1,8 +1,10 @@
 PNPM
 
-npx prisma generate
+npx prisma generate - сгенерировать Призма Клиент
 
-npx prisma migrate dev --name update-schema
+npx prisma migrate dev --name update-schema 
+
+nest g res plants - созд модуль
 
 netstat -ano | findstr :3000
 
