@@ -8,14 +8,118 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
+model Plants {
+  id           String         @id @default(uuid())
+  createdAt    DateTime       @default(now())
+  kindPlant    Kind           @default(VEGETABLE)
+  plantVariety PlantVariety[] // One-to-Many
+  typePlants   TypePlants[] // One-to-Many
+
+  // One-to-One
+  photoPackageId String?       @unique
+  photoPackage   PhotoPackage? @relation(fields: [photoPackageId], references: [id])
+
+  // One-to-Many
+  userId String // физ поле с ИД Юзера
+  users  Users  @relation(fields: [userId], references: [id])
+
+  workType WorkType @default(SEEDING)
+
+  updatedAt DateTime @updatedAt
+
+  @@map("Plants")
+}
+
 model Users {
   id       String @id @default(uuid())
   login    String
   email    String @unique
   password String
+  role     Role   @default(USER)
+
+  Plants Plants[] // ЭТО поле-связь для One-to-One
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("Users")
+}
+
+// тип растения (томат...)
+model TypePlants {
+  id          String @id @default(uuid())
+  description String
+
+  // One-to-Many
+  plantsId String // физ колонка
+  plants   Plants @relation(fields: [plantsId], references: [id]) // просто связь
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Type_of_plants")
+}
+
+// сорт растения( Де Бо Рао, Бычье сердце и тд)
+model PlantVariety {
+  id          String @id @default(uuid())
+  description String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Many-to-One
+  plantsId String // эта колонка будет в таблице, будет содерж ИД Plants
+  Plants   Plants @relation(fields: [plantsId], references: [id], onDelete: Cascade) // ЭТО поле-связь существует только в Prisma-модели нужно для настр связи
+
+  @@map("Plant_Variety")
+}
+
+model DailyTemperature {
+  id      String   @id @default(uuid())
+  date    DateTime @unique
+  minTemp Float
+  maxTemp Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Daily_Temperature")
+}
+
+model PhotoPackage {
+  id    String @id @default(uuid())
+  photo String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Plants Plants? // ЭТО поле-связь для One-to-One
+
+  @@map("Photo_Package")
+}
+
+// тип работ (посадка, пикировка, высадка, обрезка,подкорм,пересадка)
+enum WorkType {
+  SEEDING
+  PICKING
+  PLANTING
+  FERTILIZING
+  TRANSFER
+  PRUNING
+}
+
+// разновидность растения( фрукт, овощ, трава, цветы, курсы, деревья)
+enum Kind {
+  FRUIT
+  VEGETABLE
+  HERB
+  FLOWER
+  SHRUB
+  TREE
+}
+
+enum Role {
+  ADMIN
+  USER
 }
