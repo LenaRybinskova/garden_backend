@@ -9,6 +9,8 @@ export class CreatePlantDto {
   @IsEnum(Kind)
   kindPlant: Kind = Kind.VEGETABLE;
 
+  sortId: string
+
 /*  @IsString()
   userId: string;*/
 /*

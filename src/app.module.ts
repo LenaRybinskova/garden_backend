@@ -6,9 +6,10 @@ import { AuthModule } from './auth/auth.module';
 import { PlantsModule } from './plants/plants.module';
 import { PlantVarietyModule } from './plant-variety/plant-variety.module';
 import { PhotoPackageModule } from './photo-package/photo-package.module';
+import { SortModule } from './sort/sort.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, PlantsModule, PlantVarietyModule, PhotoPackageModule],
+  imports: [PrismaModule, AuthModule, PlantsModule, PlantVarietyModule, PhotoPackageModule, SortModule],
   controllers: [AppController],
   providers: [AppService],
 })

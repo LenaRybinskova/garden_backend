@@ -14,7 +14,7 @@ import { LoginDto } from 'src/auth/dto/login.dto';
 import { Request, Response } from 'express';
 import { isDev } from 'src/utils/isDev.util';
 import { JwtPayload } from 'src/auth/interfaces/jwt.interfaces';
-import { Users } from '@prisma/client';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -39,8 +39,8 @@ export class AuthService {
   //поиск юзера по ID
   async validateUser(
     id: string,
-  ): Promise<Pick<Users, 'id' | 'login' | 'email'>> {
-    const user = await this.prismaService.users.findUnique({
+  ): Promise<Pick<User, 'id' | 'login' | 'email'>> {
+    const user = await this.prismaService.user.findUnique({
       where: { id },
     });
 
@@ -90,7 +90,7 @@ export class AuthService {
   async registration(res: Response, dto: RegisterDto) {
     const { login, email, password } = dto;
 
-    const existUser = await this.prismaService.users.findUnique({
+    const existUser = await this.prismaService.user.findUnique({
       where: { email: email },
     });
 
@@ -98,7 +98,7 @@ export class AuthService {
       throw new ConflictException('Email already exists'); //409 HttpStatus.CONFLICT
     }
 
-    const user = await this.prismaService.users.create({
+    const user = await this.prismaService.user.create({
       data: { login, email, password: await hash(password) },
     });
 
@@ -108,7 +108,7 @@ export class AuthService {
   async login(res: Response, dto: LoginDto) {
     const { email, password } = dto;
 
-    const existUser = await this.prismaService.users.findUnique({
+    const existUser = await this.prismaService.user.findUnique({
       where: { email: email },
     });
 
@@ -135,7 +135,7 @@ export class AuthService {
 
     const payload: JwtPayload = await this.jwtService.verifyAsync(refreshToken);
 
-    const user = await this.prismaService.users.findUnique({
+    const user = await this.prismaService.user.findUnique({
       where: { id: payload.id },
       select: { id: true },
     });

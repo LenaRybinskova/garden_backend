@@ -8,16 +8,35 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
-model Plants {
+model Plant {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   kindPlant Kind     @default(VEGETABLE)
 
   // One to many
   userId String?
-  users  Users?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  users  User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("Plants")
+  // One to One
+  sortId String @unique
+  sort   Sort   @relation(fields: [sortId], references: [id], onDelete: Cascade)
+
+  updatedAt DateTime @updatedAt
+
+  @@map("Plant")
+}
+
+model Sort {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // One to One
+  Plant Plant[]
+
+  @@map("Sort")
 }
 
 // разновидность растения( фрукт, овощ, трава, цветы, курсы, деревья)
@@ -30,18 +49,18 @@ enum Kind {
   TREE
 }
 
-model Users {
-  id       String   @id @default(uuid())
+model User {
+  id       String  @id @default(uuid())
   login    String
-  email    String   @unique
+  email    String  @unique
   password String
-  role     Role     @default(USER)
-  plants   Plants[]
+  role     Role    @default(USER)
+  plants   Plant[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("Users")
+  @@map("User")
 }
 
 enum Role {

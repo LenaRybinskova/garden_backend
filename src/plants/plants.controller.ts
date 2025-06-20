@@ -3,7 +3,7 @@ import { PlantsService } from './plants.service';
 import { CreatePlantDto } from 'src/plants/dto/CreatePlantDto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
-import { Users } from '@prisma/client';
+import { User } from '@prisma/client';
 
 @Controller('plants')
 export class PlantsController {
@@ -12,7 +12,7 @@ export class PlantsController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
-  create(@Body() dto: CreatePlantDto, @GetUser() user: Users) {
+  create(@Body() dto: CreatePlantDto, @GetUser() user: User) {
     return this.plantsService.create(dto, user);
   }
 }
