@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePlantDto } from './dto/CreatePlantDto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Users } from '@prisma/client';
 
 @Injectable()
 export class PlantsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) {
+  }
 
-  async create(dto: CreatePlantDto) {
-    //сначала созд запись в табл photoPackage
+  async create(dto: CreatePlantDto, user: Users) {
+    /*//сначала созд запись в табл photoPackage
     let photoPackageId: string | null = null;
 
     if (dto.photoPackage) {
@@ -19,6 +21,16 @@ export class PlantsService {
       photoPackageId = photoPackage.id;
 
       return photoPackageId;
-    }
+    }*/
+
+
+    const plant = this.prismaService.plants.create({
+      data: {
+        kindPlant: dto.kindPlant,
+        userId: user.id,
+      },
+    });
+
+    return plant;
   }
 }

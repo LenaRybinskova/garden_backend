@@ -1,14 +1,17 @@
-import { Kind, WorkType } from '@prisma/client';
+import { Kind} from '@prisma/client';
 import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { CreatePlantVarietyDto } from 'src/plant-variety/dto/createPlantVariety.dto';
 import { Type } from 'class-transformer';
-import { CreatePlantPhotoPackageDto } from 'src/plants/dto/createPhotoPackage.dto';
+import { CreatePlantPhotoPackageDto } from 'src/photo-package/dto/createPhotoPackage.dto';
 
 export class CreatePlantDto {
   @IsOptional()
   @IsEnum(Kind)
   kindPlant: Kind = Kind.VEGETABLE;
 
+/*  @IsString()
+  userId: string;*/
+/*
   @ValidateNested()
   @Type(() => CreatePlantVarietyDto)
   plantVariety: CreatePlantVarietyDto;
@@ -21,10 +24,9 @@ export class CreatePlantDto {
   @Type(() => CreatePlantPhotoPackageDto)
   photoPackage?: CreatePlantPhotoPackageDto;
 
-  @IsString()
-  userId: string;
+
 
   @IsOptional()
   @IsEnum(WorkType)
-  workType: WorkType = WorkType.SEEDING;
+  workType: WorkType = WorkType.SEEDING;*/
 }

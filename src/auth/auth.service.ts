@@ -14,6 +14,7 @@ import { LoginDto } from 'src/auth/dto/login.dto';
 import { Request, Response } from 'express';
 import { isDev } from 'src/utils/isDev.util';
 import { JwtPayload } from 'src/auth/interfaces/jwt.interfaces';
+import { Users } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -36,13 +37,11 @@ export class AuthService {
   }
 
   //поиск юзера по ID
-  async validateUser(id: string) {
+  async validateUser(
+    id: string,
+  ): Promise<Pick<Users, 'id' | 'login' | 'email'>> {
     const user = await this.prismaService.users.findUnique({
       where: { id },
-      select: {
-        login: true,
-        email: true,
-      },
     });
 
     if (!user) {
