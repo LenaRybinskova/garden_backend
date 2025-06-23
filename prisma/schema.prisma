@@ -21,17 +21,22 @@ model Plant {
   sortId String @unique
   sort   Sort   @relation(fields: [sortId], references: [id], onDelete: Cascade)
 
+  // One to many
+  events Event[] @relation()
+
   updatedAt DateTime @updatedAt
 
   @@map("Plant")
 }
 
 model Sort {
-  id          String   @id @default(uuid())
-  name        String
-  description String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                  String   @id @default(uuid())
+  name                String
+  userDescription     String?
+  producerDescription String?
+  photoPackage        String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   // One to One
   Plant Plant?
@@ -66,4 +71,29 @@ model User {
 enum Role {
   ADMIN
   USER
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  workType    WorkType @default(SEEDING)
+  description String?
+  photo       String?
+
+  plantId String
+  plant   Plant  @relation(fields: [plantId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Event")
+}
+
+enum WorkType {
+  PHOTO
+  SEEDING
+  PICKING
+  PLANTING
+  FERTILIZING
+  TRANSFER
+  PRUNING
 }

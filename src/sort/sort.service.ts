@@ -10,7 +10,9 @@ export class SortService {
     const sort = this.prismaService.sort.create({
       data: {
         name: dto.name,
-        description: dto.description,
+        userDescription: dto.userDescription,
+        producerDescription: dto.producerDescription,
+        photoPackage: dto.photoPackage,
       },
     });
 

@@ -1,9 +1,18 @@
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreateSortDTO {
   @IsString()
   name: string;
 
   @IsString()
-  description: string;
+  @IsOptional()
+  userDescription?: string;
+
+  @IsString()
+  @IsOptional()
+  producerDescription?: string;
+
+  @IsString()
+  @IsOptional()
+  photoPackage?: string;
 }

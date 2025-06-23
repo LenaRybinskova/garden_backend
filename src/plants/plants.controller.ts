@@ -7,8 +7,7 @@ import { User } from '@prisma/client';
 
 @Controller('plants')
 export class PlantsController {
-  constructor(private readonly plantsService: PlantsService) {
-  }
+  constructor(private readonly plantsService: PlantsService) {}
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
@@ -16,5 +15,3 @@ export class PlantsController {
     return this.plantsService.create(dto, user);
   }
 }
-
-

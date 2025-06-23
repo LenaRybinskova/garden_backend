@@ -1,18 +1,32 @@
-import { Body, Controller, Get, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from 'src/auth/dto/registration.dto';
 import { LoginDto } from 'src/auth/dto/login.dto';
 import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AccessTokenResponseDto } from 'src/auth/dto/AccessTokenRes.dto';
 import { MeAccessResDto } from 'src/auth/dto/MeAccessRes.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {
-  }
+  constructor(private readonly authService: AuthService) {}
 
   @ApiOperation({ summary: 'Регистрация нового пользователя' })
   @ApiBody({

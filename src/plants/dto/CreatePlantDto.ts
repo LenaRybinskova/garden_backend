@@ -1,35 +1,19 @@
-import { Kind} from '@prisma/client';
-import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { CreatePlantVarietyDto } from 'src/plant-variety/dto/createPlantVariety.dto';
-import { Type } from 'class-transformer';
-import { CreatePlantPhotoPackageDto } from 'src/photo-package/dto/createPhotoPackage.dto';
+import { Kind } from '@prisma/client';
+import { IsEnum, IsOptional, ValidateNested } from 'class-validator';
 import { CreateSortDTO } from 'src/sort/dto/create-sort.dto';
+import { CreateEventDTO } from 'src/plants/dto/CreateEvent.dto';
+import { Type } from 'class-transformer';
 
 export class CreatePlantDto {
-  @IsOptional()
   @IsEnum(Kind)
-  kindPlant: Kind = Kind.VEGETABLE;
-
-  sort: CreateSortDTO
-
-/*  @IsString()
-  userId: string;*/
-/*
-  @ValidateNested()
-  @Type(() => CreatePlantVarietyDto)
-  plantVariety: CreatePlantVarietyDto;
+  kindPlant: Kind;
 
   @ValidateNested()
-  @Type(() => CreatePlantVarietyDto)
-  typePlants: CreatePlantVarietyDto;
-
-  @ValidateNested()
-  @Type(() => CreatePlantPhotoPackageDto)
-  photoPackage?: CreatePlantPhotoPackageDto;
-
-
+  @Type(() => CreateSortDTO)
+  sort: CreateSortDTO;
 
   @IsOptional()
-  @IsEnum(WorkType)
-  workType: WorkType = WorkType.SEEDING;*/
+  @ValidateNested({ each: true })
+  @Type(() => CreateEventDTO)
+  event?: CreateEventDTO;
 }

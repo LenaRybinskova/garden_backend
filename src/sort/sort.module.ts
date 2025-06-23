@@ -5,5 +5,7 @@ import { SortController } from './sort.controller';
 @Module({
   controllers: [SortController],
   providers: [SortService],
+  exports: [SortService],
 })
-export class SortModule {}
+export class SortModule {
+}
