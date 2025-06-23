@@ -34,7 +34,7 @@ model Sort {
   updatedAt   DateTime @updatedAt
 
   // One to One
-  Plant Plant[]
+  Plant Plant?
 
   @@map("Sort")
 }

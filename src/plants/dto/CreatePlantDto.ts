@@ -3,13 +3,14 @@ import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { CreatePlantVarietyDto } from 'src/plant-variety/dto/createPlantVariety.dto';
 import { Type } from 'class-transformer';
 import { CreatePlantPhotoPackageDto } from 'src/photo-package/dto/createPhotoPackage.dto';
+import { CreateSortDTO } from 'src/sort/dto/create-sort.dto';
 
 export class CreatePlantDto {
   @IsOptional()
   @IsEnum(Kind)
   kindPlant: Kind = Kind.VEGETABLE;
 
-  sortId: string
+  sort: CreateSortDTO
 
 /*  @IsString()
   userId: string;*/

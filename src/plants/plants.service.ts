@@ -9,29 +9,37 @@ export class PlantsService {
   }
 
   async create(dto: CreatePlantDto, user: User) {
-    /*//сначала созд запись в табл photoPackage
-    let photoPackageId: string | null = null;
 
-    if (dto.photoPackage) {
-      const photoPackage = await this.prismaService.photoPackage.create({
-        data: {
-          photo: dto.photoPackage.photo,
-        },
-      });
-      photoPackageId = photoPackage.id;
-
-      return photoPackageId;
-    }*/
-
+    const sort = await this.prismaService.sort.create({
+      data: {
+        name: dto.sort.name,
+        description: dto.sort.description,
+      },
+    });
 
     const plant = this.prismaService.plant.create({
       data: {
         kindPlant: dto.kindPlant,
         userId: user.id,
-        sortId: "string"
-      }
+        sortId: sort.id,
+      },
     });
 
     return plant;
   }
 }
+
+
+/*//сначала созд запись в табл photoPackage
+let photoPackageId: string | null = null;
+
+if (dto.photoPackage) {
+  const photoPackage = await this.prismaService.photoPackage.create({
+    data: {
+      photo: dto.photoPackage.photo,
+    },
+  });
+  photoPackageId = photoPackage.id;
+
+  return photoPackageId;
+}*/
