@@ -6,6 +6,19 @@ import { CreateEventDTO } from 'src/plants/dto/CreateEvent.dto';
 export class EventService {
   constructor(private readonly prismaService: PrismaService) {}
 
+  async findAll() {
+    return this.prismaService.event.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async findById(plantId: string){
+    return this.prismaService.event.findUnique({
+      where: { id: plantId },
+      select: { photo: true },
+    });
+  }
+
   async create(dto: CreateEventDTO & { plantId: string }) {
 
     return this.prismaService.event.create({
@@ -15,6 +28,9 @@ export class EventService {
         photo: dto.photo,
         plantId: dto.plantId,
       } as CreateEventDTO & { plantId: string },
+      select: { photo: true },
     });
   }
 }
+
+
