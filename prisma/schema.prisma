@@ -8,14 +8,92 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
-model Users {
-  id       String @id @default(uuid())
+model Plant {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  kindPlant Kind     @default(VEGETABLE)
+
+  // One to many
+  userId String?
+  users  User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // One to One
+  sortId String @unique
+  sort   Sort   @relation(fields: [sortId], references: [id], onDelete: Cascade)
+
+  // One to many
+  events Event[] @relation()
+
+  updatedAt DateTime @updatedAt
+
+  @@map("Plant")
+}
+
+model Sort {
+  id                  String   @id @default(uuid())
+  name                String
+  userDescription     String?
+  producerDescription String?
+  photoPackage        String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // One to One
+  Plant Plant?
+
+  @@map("Sort")
+}
+
+// разновидность растения( фрукт, овощ, трава, цветы, курсы, деревья)
+enum Kind {
+  FRUIT
+  VEGETABLE
+  HERB
+  FLOWER
+  SHRUB
+  TREE
+}
+
+model User {
+  id       String  @id @default(uuid())
   login    String
-  email    String @unique
+  email    String  @unique
   password String
+  role     Role    @default(USER)
+  plants   Plant[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("Users")
+  @@map("User")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  workType    WorkType @default(SEEDING)
+  description String?
+  photo       String?
+
+  plantId String
+  plant   Plant  @relation(fields: [plantId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Event")
+}
+
+enum WorkType {
+  PHOTO
+  SEEDING
+  PICKING
+  PLANTING
+  FERTILIZING
+  TRANSFER
+  PRUNING
 }
