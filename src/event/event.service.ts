@@ -13,9 +13,9 @@ export class EventService {
   }
 
   async findById(plantId: string){
-    return this.prismaService.event.findUnique({
-      where: { id: plantId },
-      select: { photo: true },
+    return this.prismaService.event.findMany({
+      where: { plantId: plantId },
+      select: { photo: true, plant: true },
     });
   }
 
