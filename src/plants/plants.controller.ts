@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { PlantsService } from './plants.service';
 import { CreatePlantDto } from 'src/plants/dto/CreatePlantDto';
 import { AuthGuard } from '@nestjs/passport';
@@ -13,5 +13,17 @@ export class PlantsController {
   @Post()
   create(@Body() dto: CreatePlantDto, @GetUser() user: User) {
     return this.plantsService.create(dto, user);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get()
+  findAll() {
+    return this.plantsService.findAll();
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get(':id')
+  findById(@Param('id') id: string) {
+    return this.plantsService.findById(id);
   }
 }
