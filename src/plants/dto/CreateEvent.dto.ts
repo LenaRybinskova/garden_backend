@@ -3,7 +3,7 @@ import { WorkType } from '@prisma/client';
 
 export class CreateEventDTO {
   @IsEnum(WorkType)
-  workType: WorkType = WorkType.SEEDING;
+  workType?: WorkType = WorkType.SEEDING;
 
   @IsString()
   @IsOptional()
