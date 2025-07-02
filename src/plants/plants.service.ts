@@ -57,7 +57,6 @@ export class PlantsService {
     }
   }
 
-
   async delete(id: string) {
     await this.findById(id);
     return this.prismaService.plant.delete({ where: { id: id } });
