@@ -7,9 +7,19 @@ import { PlantsModule } from './plants/plants.module';
 
 import { SortModule } from './sort/sort.module';
 import { EventModule } from './event/event.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { MoonPhaseModule } from './moon-phase/moon-phase.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, PlantsModule, SortModule, EventModule],
+  imports: [
+    ScheduleModule.forRoot(),
+    PrismaModule,
+    AuthModule,
+    PlantsModule,
+    SortModule,
+    EventModule,
+    MoonPhaseModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

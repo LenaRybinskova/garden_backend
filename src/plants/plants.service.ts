@@ -5,6 +5,7 @@ import { User } from '@prisma/client';
 import { SortService } from 'src/sort/sort.service';
 import { EventService } from 'src/event/event.service';
 import { handlePrismaError } from 'src/common/utils/handlePrismaError';
+import { UpdatePlantDto } from 'src/plants/dto/UpdatePlnat.dto';
 
 @Injectable()
 export class PlantsService {
@@ -12,7 +13,8 @@ export class PlantsService {
     private prismaService: PrismaService,
     private sortService: SortService,
     private readonly eventService: EventService,
-  ) {}
+  ) {
+  }
 
   async create(dto: CreatePlantDto, user: User) {
     // cоздала сорт
@@ -48,10 +50,15 @@ export class PlantsService {
     try {
       return this.prismaService.plant.findUnique({
         where: { id },
-        select: { events: { orderBy: { createdAt: 'desc' } } }
+        select: { events: { orderBy: { createdAt: 'desc' } } },
       });
     } catch (error) {
       handlePrismaError(error, 'нет такого ID');
     }
+  }
+
+  async delete(id: string) {
+    await this.findById(id);
+    return this.prismaService.plant.delete({ where: { id: id } });
   }
 }

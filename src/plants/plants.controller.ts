@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller, Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { PlantsService } from './plants.service';
 import { CreatePlantDto } from 'src/plants/dto/CreatePlantDto';
 import { AuthGuard } from '@nestjs/passport';
@@ -25,5 +33,11 @@ export class PlantsController {
   @Get(':id')
   findById(@Param('id') id: string) {
     return this.plantsService.findById(id);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.plantsService.delete(id);
   }
 }
