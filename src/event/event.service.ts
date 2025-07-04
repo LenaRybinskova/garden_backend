@@ -43,6 +43,7 @@ export class EventService {
     return this.prismaService.event.create({
       data: {
         workType: dto.workType,
+        moonPhase: dto.moonPhase,
         description: dto.description,
         photo: dto.photo,
         plantId: dto.plantId,
