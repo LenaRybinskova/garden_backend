@@ -51,7 +51,5 @@ export class MoonPhaseService {
       icon: this.moonPhaseIcons[phase] ?? '/assets/moon/default.svg',
     };
     return response;
-
-
   }
 }

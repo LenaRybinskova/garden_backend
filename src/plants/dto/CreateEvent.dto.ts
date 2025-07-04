@@ -7,6 +7,10 @@ export class CreateEventDTO {
 
   @IsString()
   @IsOptional()
+  moonPhase?: string;
+
+  @IsString()
+  @IsOptional()
   description?: string;
 
   @IsString()

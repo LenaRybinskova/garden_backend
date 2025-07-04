@@ -76,6 +76,7 @@ enum Role {
 model Event {
   id          String   @id @default(uuid())
   workType    WorkType @default(SEEDING)
+  moonPhase   String?
   description String?
   photo       String?
 
