@@ -6,6 +6,7 @@ import { SortService } from 'src/sort/sort.service';
 import { EventService } from 'src/event/event.service';
 import { handlePrismaError } from 'src/common/utils/handlePrismaError';
 import { UpdatePlantDto } from 'src/plants/dto/UpdatePlnat.dto';
+import { SeasonService } from 'src/season/season.service';
 
 @Injectable()
 export class PlantsService {
@@ -13,27 +14,41 @@ export class PlantsService {
     private prismaService: PrismaService,
     private sortService: SortService,
     private readonly eventService: EventService,
-  ) {
-  }
+    private readonly seasonService: SeasonService,
+  ) {}
 
   async create(dto: CreatePlantDto, user: User) {
-    // cоздала сорт
+    // cоздала Cорт
     const sort = await this.sortService.create(dto.sort);
+
+    const currentSeason = await this.seasonService.findCurrentSeasonByUserId(
+      user.id,
+      '2025',
+    );
+
+    if (!currentSeason) {
+      throw new NotFoundException('Сезон не найден (или не создан)');
+    }
 
     // cоздала Плант с sort.id,
     const plant = await this.prismaService.plant.create({
       data: {
         kindPlant: dto.kindPlant,
+        isPerennial: dto.isPerennial,
         userId: user.id,
-        sortId: sort.id,
+        sortId: sort.id, // сюда кладу только что созданную сущность Сорт
+        season: { connect: { id: currentSeason.id } }, // сюда соед уже существующ сущность Сезон
+        locationText: dto.locationText,
+        result: '',
       },
     });
 
-    // если были переданы данные по event, то создаем сразу event
+    // если были переданы данные по event, то берем готовый метод из eventService и созд Евент
     if (dto.event) {
       await this.eventService.create({
-        ...dto.event,
+        ...dto,
         plantId: plant.id,
+        userId: user.id,
       });
     }
 

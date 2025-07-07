@@ -8,10 +8,28 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
+model Season {
+  id          String @id @default(uuid())
+  name        String @default("2025")
+  description String @default("")
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  plant Plant[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Season")
+}
+
 model Plant {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   kindPlant Kind     @default(VEGETABLE)
+
+  isPerennial Boolean? @default(false)
 
   // One to many
   userId String?
@@ -23,6 +41,10 @@ model Plant {
 
   // One to many
   events Event[] @relation()
+
+  season       Season[]
+  locationText String?
+  result       String?
 
   updatedAt DateTime @updatedAt
 
@@ -55,12 +77,14 @@ enum Kind {
 }
 
 model User {
-  id       String  @id @default(uuid())
+  id       String   @id @default(uuid())
   login    String
-  email    String  @unique
+  email    String   @unique
   password String
-  role     Role    @default(USER)
+  role     Role     @default(USER)
   plants   Plant[]
+  events   Event[]
+  season   Season[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -80,8 +104,14 @@ model Event {
   description String?
   photo       String?
 
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   plantId String
   plant   Plant  @relation(fields: [plantId], references: [id], onDelete: Cascade)
+
+  weatherId String
+  weather   Weather @relation(fields: [weatherId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -89,14 +119,15 @@ model Event {
   @@map("Event")
 }
 
-model moonPhase {
+model Weather {
   id    String @id @default(uuid())
-  value String
+  day   String
+  night String
+
+  event Event[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@map("Moon_phase")
 }
 
 enum WorkType {

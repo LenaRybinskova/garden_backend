@@ -1,10 +1,10 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { MoonPhaseService } from './moon-phase.service';
-import { AuthGuard } from '@nestjs/passport';
 
 @Controller('moon-phase')
 export class MoonPhaseController {
-  constructor(private readonly moonPhaseService: MoonPhaseService) {}
+  constructor(private readonly moonPhaseService: MoonPhaseService) {
+  }
 
   //@UseGuards(AuthGuard('jwt'))
   @Get()
@@ -12,3 +12,9 @@ export class MoonPhaseController {
     return this.moonPhaseService.getMoonPhase();
   }
 }
+
+/*{
+  "city": "Moscow",
+  "moon_Phase": "Waxing Gibbous",
+  "icon": "/assets/moon/waxing-gibbous.svg"
+}*/
