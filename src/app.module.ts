@@ -9,6 +9,7 @@ import { SortModule } from './sort/sort.module';
 import { EventModule } from './event/event.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MoonPhaseModule } from './moon-phase/moon-phase.module';
+import { SeasonModule } from './season/season.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { MoonPhaseModule } from './moon-phase/moon-phase.module';
     SortModule,
     EventModule,
     MoonPhaseModule,
+    SeasonModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -20,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  // validate сраб автом если с токеном все ок
+  // validate сраб автом если с токеном все ок, validateUser возвращает Юзер
   async validate(payload: JwtPayload) {
     return await this.authService.validateUser(payload.id);
   }

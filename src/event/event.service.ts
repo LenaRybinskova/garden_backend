@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateEventDTO } from 'src/plants/dto/CreateEvent.dto';
+import { CreateEventDTO } from 'src/event/dto/CreateEvent.dto';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class EventService {
@@ -39,7 +40,8 @@ export class EventService {
     }
   }
 
-  async create(dto: CreateEventDTO & { plantId: string }) {
+  async create(dto: CreateEventDTO & { plantId: string; userId: string }) {
+
     return this.prismaService.event.create({
       data: {
         workType: dto.workType,
@@ -47,8 +49,9 @@ export class EventService {
         description: dto.description,
         photo: dto.photo,
         plantId: dto.plantId,
-      } as CreateEventDTO & { plantId: string },
-      select: { photo: true },
+        userId: dto.userId,
+        weatherId: dto.weather ? dto.weather : { connect: { id: '22' } }, // если погода передана, то
+      } as CreateEventDTO & { plantId: string, userId: string },
     });
   }
 
