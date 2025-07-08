@@ -5,7 +5,7 @@ import { User } from '@prisma/client';
 import { SortService } from 'src/sort/sort.service';
 import { EventService } from 'src/event/event.service';
 import { handlePrismaError } from 'src/common/utils/handlePrismaError';
-import { UpdatePlantDto } from 'src/plants/dto/UpdatePlnat.dto';
+
 import { SeasonService } from 'src/season/season.service';
 
 @Injectable()

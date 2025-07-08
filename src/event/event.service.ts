@@ -42,7 +42,7 @@ export class EventService {
 
   async create(dto: CreateEventDTO & { plantId: string; userId: string }) {
 
-    return this.prismaService.event.create({
+    /*return this.prismaService.event.create({
       data: {
         workType: dto.workType,
         moonPhase: dto.moonPhase,
@@ -52,7 +52,7 @@ export class EventService {
         userId: dto.userId,
         weatherId: dto.weather ? dto.weather : { connect: { id: '22' } }, // если погода передана, то
       } as CreateEventDTO & { plantId: string, userId: string },
-    });
+    });*/
   }
 
   async delete(id: string) {

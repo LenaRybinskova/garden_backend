@@ -10,6 +10,7 @@ import { EventModule } from './event/event.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MoonPhaseModule } from './moon-phase/moon-phase.module';
 import { SeasonModule } from './season/season.module';
+import { WeatherModule } from './weather/weather.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { SeasonModule } from './season/season.module';
     EventModule,
     MoonPhaseModule,
     SeasonModule,
+    WeatherModule,
   ],
   controllers: [AppController],
   providers: [AppService],

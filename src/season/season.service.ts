@@ -14,7 +14,7 @@ export class SeasonService {
     });
   }
 
-//TODO findFirst правильно?? мне надо чтобы возвращался по юзерИД и нейму конкретный Сезон
+// TODO findFirst правильно?? мне надо чтобы возвращался по юзерИД и нейму конкретный Сезон
 
   async findCurrentSeasonByUserId(userId: string, name: string) {
     return this.prismaService.season.findFirst({
@@ -29,7 +29,6 @@ export class SeasonService {
         description: dto.description,
         user: { connect: { id: user.id } },
       },
-    });
-
+    })
   }
 }
