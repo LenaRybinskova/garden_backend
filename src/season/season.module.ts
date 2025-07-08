@@ -7,5 +7,6 @@ import { PrismaModule } from 'src/prisma/prisma.module';
   controllers: [SeasonController],
   imports: [PrismaModule],
   providers: [SeasonService],
+  exports: [SeasonService],
 })
 export class SeasonModule {}

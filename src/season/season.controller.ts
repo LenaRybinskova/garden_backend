@@ -10,13 +10,13 @@ export class SeasonController {
   constructor(private readonly seasonService: SeasonService) {}
 
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   async findByUserId(@GetUser() user: User) {
     return this.seasonService.findByUserId(user.id);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Post()
   async create(@Body() dto: CreateSeasonDto, @GetUser() user: User) {
     return this.seasonService.create(dto, user);
