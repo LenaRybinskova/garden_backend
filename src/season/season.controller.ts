@@ -9,7 +9,6 @@ import { AuthGuard } from '@nestjs/passport';
 export class SeasonController {
   constructor(private readonly seasonService: SeasonService) {}
 
-
   @UseGuards(AuthGuard('jwt'))
   @Get()
   async findByUserId(@GetUser() user: User) {

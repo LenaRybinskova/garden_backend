@@ -8,6 +8,17 @@ export class SeasonService {
   constructor(private readonly prismaService: PrismaService) {
   }
 
+  async create(dto: CreateSeasonDto, user: User) {
+    return this.prismaService.season.create({
+      data: {
+        name: dto.name,
+        description: dto.description,
+        user: { connect: { id: user.id } },
+      },
+    })
+  }
+
+
   async findByUserId(userId: string) {
     return this.prismaService.season.findMany({
       where: { userId: userId },
@@ -22,13 +33,5 @@ export class SeasonService {
     });
   }
 
-  async create(dto: CreateSeasonDto, user: User) {
-    return this.prismaService.season.create({
-      data: {
-        name: dto.name,
-        description: dto.description,
-        user: { connect: { id: user.id } },
-      },
-    })
-  }
+
 }

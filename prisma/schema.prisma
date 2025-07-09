@@ -120,9 +120,10 @@ model Event {
 }
 
 model Weather {
-  id    String @id @default(uuid())
-  day   String
-  night String
+  id       String  @id @default(uuid())
+  dateTime String  @unique // 2025-07-08 @unique
+  AM3      String?
+  PM3      String?
 
   event Event[]
 
