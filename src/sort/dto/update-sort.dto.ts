@@ -1,9 +1,11 @@
 import { IsOptional, IsString } from 'class-validator';
 
-// отдельно Сорт не создается, только когда создаю Плант, сразу создается и Сорт
-export class CreateSortDTO {
+export class UpdateSotrDto {
   @IsString()
-  name: string;
+  id: string;
+
+  @IsString()
+  name?: string;
 
   @IsString()
   @IsOptional()

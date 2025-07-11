@@ -25,9 +25,9 @@ model Season {
 }
 
 model Plant {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  kindPlant Kind     @default(VEGETABLE)
+  id        String  @id @default(uuid())
+  dateTime  String? // 2025-07-08
+  kindPlant Kind    @default(VEGETABLE)
 
   isPerennial Boolean? @default(false)
 
@@ -46,6 +46,7 @@ model Plant {
   locationText String?
   result       String?
 
+  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("Plant")
@@ -56,7 +57,7 @@ model Sort {
   name                String
   userDescription     String?
   producerDescription String?
-  photoPackage        String?
+  photoPackageBase64  String?
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
@@ -99,10 +100,11 @@ enum Role {
 
 model Event {
   id          String   @id @default(uuid())
+  dateTime    String? // 2025-07-08
   workType    WorkType @default(SEEDING)
   moonPhase   String?
   description String?
-  photo       String?
+  photoBase64 String?
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -120,10 +122,11 @@ model Event {
 }
 
 model Weather {
-  id       String  @id @default(uuid())
-  dateTime String  @unique // 2025-07-08 @unique
-  AM3      String?
-  PM3      String?
+  id          String  @id @default(uuid())
+  dateTime    String  @unique // 2025-07-08 @unique
+  AM3         String?
+  PM3         String?
+  description String?
 
   event Event[]
 

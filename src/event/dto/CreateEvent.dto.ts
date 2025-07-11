@@ -15,9 +15,7 @@ export class CreateEventDTO {
 
   @IsString()
   @IsOptional()
-  photo?: string;
+  photoBase64?: string;
 
-  @IsString()
-  @IsOptional()
-  weather?: string;
+
 }

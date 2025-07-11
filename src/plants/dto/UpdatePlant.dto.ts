@@ -9,6 +9,10 @@ export class UpdatePlantDto {
   kindPlant?: Kind;
 
   @IsOptional()
+  @IsEnum(Kind)
+  dateTime?: string;
+
+  @IsOptional()
   @ValidateNested()
   @Type(() => CreateSortDTO)
   sort?: CreateSortDTO;

@@ -5,6 +5,7 @@ import { HttpService } from '@nestjs/axios';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateWeatherDto } from 'src/weather/dto/Create-weather.dto';
 import { Cron } from '@nestjs/schedule';
+import { UpdateWeatherDto } from 'src/weather/dto/Update-weather.dto';
 
 @Injectable()
 export class WeatherService {
@@ -12,7 +13,8 @@ export class WeatherService {
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
     private readonly prismaService: PrismaService,
-  ) {}
+  ) {
+  }
 
   async getWeather() {
     const today = new Date();
@@ -52,22 +54,41 @@ export class WeatherService {
     }
   }
 
-  getTemperature() {
-    return this.getWeather();
-  }
-
   @Cron('0 3 * * *', { timeZone: 'Europe/Moscow' }) // 3:00 ночи
   async handle3AM() {
     console.log('=== Запуск в 03:00 ===');
-    await this.getTemperature();
+    await this.getWeather();
   }
 
-  @Cron('0 12 * * *', { timeZone: 'Europe/Moscow' }) // 15:00 дня
+  @Cron('0 15 * * *', { timeZone: 'Europe/Moscow' }) // 15:00 дня
   async handle3PM() {
     console.log('=== Запуск в 15:00 ===');
-    await this.getTemperature();
+    await this.getWeather();
   }
 
+  async updateWeather(dto: UpdateWeatherDto) {
+
+    const dataToUpdate: Record<string, string> = {};
+
+    if (dto.AM3 !== undefined) {
+      dataToUpdate.AM3 = dto.AM3;
+    }
+
+    if (dto.PM3 !== undefined) {
+      dataToUpdate.PM3 = dto.PM3;
+    }
+
+    if (dto.description !== undefined) {
+      dataToUpdate.description = dto.description;
+    }
+    const date = await this.prismaService.weather.update({
+      where: { dateTime: dto.dateTime }, data: dataToUpdate,
+    });
+
+    return date;
+  }
+
+//технический
   async debugCreateWeather(dto: CreateWeatherDto) {
     return this.prismaService.weather.create({
       data: {
