@@ -2,11 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
-
+import { MoonPhase } from 'src/moon-phase/types/moon-phase-types';
+import { AstronomyApiResponse } from 'src/moon-phase/interface/AstronomyApiResponse';
+import { AxiosResponse } from 'axios';
 
 @Injectable()
 export class MoonPhaseService {
-
   private readonly moonPhaseIcons: Record<string, string> = {
     'New Moon': '/assets/moon/new-moon.svg',
     'Waxing Crescent': '/assets/moon/waxing-crescent.svg',
@@ -17,15 +18,13 @@ export class MoonPhaseService {
     'Last Quarter': '/assets/moon/last-quarter.svg',
     'Waning Crescent': '/assets/moon/waning-crescent.svg',
   };
+
   constructor(
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
-
   ) {}
 
-
-
-  //этот метод должан со старта приложения с фронта запрашиваться и там сохр в локалСТор и потом для созд Ивента использоваться
+  //этот метод должен со старта приложения с фронта запрашиваться и там сохр в локалСТор и потом для созд Ивента использоваться
   // TODO делать потом чтобы с фронтенда приходил город
   async getMoonPhase() {
     const currentTime = new Date().toISOString().slice(0, 10);
@@ -36,17 +35,20 @@ export class MoonPhaseService {
     };
 
     const moonPhase = await lastValueFrom(
-      this.httpService.get('https://api.weatherapi.com/v1/astronomy.json', {
-        params,
-      }),
+      this.httpService.get<AstronomyApiResponse>(
+        'https://api.weatherapi.com/v1/astronomy.json',
+        {
+          params,
+        },
+      ),
     );
 
-    const phase = moonPhase.data.astronomy.astro.moon_phase;
-
+    const phase: MoonPhase = moonPhase.data.astronomy.astro.moon_phase;
+    // TODO тут домен надо добавить, чтобы на фронтенд передавать полную ссылку
     const response = {
       city: 'Moscow',
       moon_Phase: phase,
-      icon: this.moonPhaseIcons[phase] ?? '/assets/moon/default.svg',
+      icon: this.moonPhaseIcons[phase] ?? '',
     };
     return response;
   }

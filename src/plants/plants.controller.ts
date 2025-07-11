@@ -1,6 +1,7 @@
 import {
   Body,
-  Controller, Delete,
+  Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -12,6 +13,7 @@ import { CreatePlantDto } from 'src/plants/dto/CreatePlantDto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { User } from '@prisma/client';
+import { UpdatePlantDto } from 'src/plants/dto/UpdatePlant.dto';
 
 @Controller('plants')
 export class PlantsController {
@@ -24,6 +26,16 @@ export class PlantsController {
   }
 
   @UseGuards(AuthGuard('jwt'))
+  @Put(':id')
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdatePlantDto,
+    @GetUser() user: User,
+  ) {
+    return this.plantsService.update({ ...dto, plantId: id, user});
+  }
+
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   findAll() {
     return this.plantsService.findAll();
@@ -32,7 +44,7 @@ export class PlantsController {
   @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   findById(@Param('id') id: string) {
-    return this.plantsService.findById(id);
+    return this.plantsService.findByIdWithEvents(id);
   }
 
   @UseGuards(AuthGuard('jwt'))

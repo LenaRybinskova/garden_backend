@@ -29,7 +29,7 @@ export class EventService {
         data: {
           workType: dto.workType,
           description: dto.description,
-          photo: dto.photo,
+          photoBase64: dto.photoBase64,
         },
       });
     } catch (error) {
@@ -41,18 +41,34 @@ export class EventService {
   }
 
   async create(dto: CreateEventDTO & { plantId: string; userId: string }) {
+    const dateStr = new Date().toISOString().split('T')[0]; // "2025-07-07"
 
-    /*return this.prismaService.event.create({
+    //ищем запись о Погоде на сегдня
+    let weather = await this.prismaService.weather.findUnique({
+      where: { dateTime: dateStr },
+    });
+
+    // Если не нашли — создаём новую
+    if (!weather) {
+      weather = await this.prismaService.weather.create({
+        data: {
+          dateTime: dateStr,
+        },
+      });
+    }
+
+    // Создаём событие
+    return this.prismaService.event.create({
       data: {
         workType: dto.workType,
         moonPhase: dto.moonPhase,
         description: dto.description,
-        photo: dto.photo,
+        photoBase64: dto.photoBase64,
         plantId: dto.plantId,
         userId: dto.userId,
-        weatherId: dto.weather ? dto.weather : { connect: { id: '22' } }, // если погода передана, то
-      } as CreateEventDTO & { plantId: string, userId: string },
-    });*/
+        weatherId: weather.id,
+      },
+    });
   }
 
   async delete(id: string) {
@@ -66,4 +82,5 @@ export class EventService {
       throw error;
     }
   }
+
 }

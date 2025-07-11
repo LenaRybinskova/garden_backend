@@ -1,6 +1,6 @@
 import { IsOptional, IsString } from 'class-validator';
 
-export class CreateWeatherDto {
+export class UpdateWeatherDto {
   @IsString()
   dateTime: string;
 
