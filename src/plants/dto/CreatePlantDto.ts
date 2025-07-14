@@ -11,6 +11,9 @@ import { CreateEventDTO } from 'src/event/dto/CreateEvent.dto';
 import { Type } from 'class-transformer';
 
 export class CreatePlantDto {
+  @IsString()
+  dateTime: string;
+
   @IsEnum(Kind)
   kindPlant: Kind;
 

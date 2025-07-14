@@ -2,6 +2,9 @@ import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { WorkType } from '@prisma/client';
 
 export class CreateEventDTO {
+  @IsString()
+  dateTime: string;
+
   @IsEnum(WorkType)
   workType?: WorkType = WorkType.SEEDING;
 

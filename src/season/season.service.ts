@@ -18,7 +18,6 @@ export class SeasonService {
     })
   }
 
-
   async findByUserId(userId: string) {
     return this.prismaService.season.findMany({
       where: { userId: userId },

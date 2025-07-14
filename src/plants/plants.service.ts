@@ -19,6 +19,18 @@ export class PlantsService {
   ) {
   }
 
+  async isOwnPlant(plantId: string, userId: string) {
+    try {
+      const plant = await this.findById(plantId);
+       if( plant && plant.userId=== userId){
+        return plant;
+       }
+    } catch (error) {
+      throw new ForbiddenException('этот пользователь не может вносить изменения тк не является создателем Plant');
+    }
+  }
+
+// TODO захардкож 2025 заменит ьна текущий
   async create(dto: CreatePlantDto, user: User) {
     // cоздала Cорт
     const sort = await this.sortService.create(dto.sort);
@@ -32,6 +44,7 @@ export class PlantsService {
     // cоздала Плант с sort.id,
     const plant = await this.prismaService.plant.create({
       data: {
+        dateTime: dto.dateTime,
         kindPlant: dto.kindPlant,
         isPerennial: dto.isPerennial,
         userId: user.id,
@@ -54,34 +67,43 @@ export class PlantsService {
     return plant;
   }
 
+  // Изменять Плант может только тот, кто его создавал
   async update(dto: UpdatePlantDto & { plantId: string, user: User }) {
+    const currentUserIsOwnerPlant = await this.isOwnPlant(dto.plantId, dto.user.id);
 
-    // Изменять Плант может только тот, кто его создавал
-    try{
-      // нашли Плант
-      const plant = await this.findById(dto.plantId)
+    if (currentUserIsOwnerPlant) {
+      // если что то в Сорте надо изменить, то снчала делаепм изм в Сорт, потом в Плант
+      let sortData;
 
-      // проверка, у этого Плант создатель этот юзер который запрос направляет ?
-      if(plant){
-        if( plant.userId===dto.user.id)
-        {
-
-          return this.prismaService.plant.update({where:{id: plant.id},data:{
-              kindPlant: dto.kindPlant,
-              sort:dto.sort
-            })
-        }
+      if (dto.sort) {
+        sortData = await this.sortService.update(dto.sort);
       }
-    }
 
+      const updateData = {
+        dateTime: dto.dateTime?? undefined,
+        kindPlant: dto.kindPlant?? undefined,
+        isPerennial: dto.isPerennial?? undefined,
+        sortId: sortData.id ?? undefined,
+        locationText:dto.locationText ?? undefined,
+        result: dto.result ?? undefined,
+      }
 
-    catch(err){
-        throw new ForbiddenException("этот пользователь не может вносить изменения тк не является создателем Plant")
+      return this.prismaService.plant.update({
+        where:{id:dto.plantId},
+        data: updateData});
     }
   }
+
+
+// TODO этот метод надо с SSR сделать для фронтенда
   async findAll() {
     return this.prismaService.plant.findMany({
       orderBy: { createdAt: 'desc' },
+      include: {
+        events: {
+          orderBy: { createdAt: 'desc' },
+        },
+      },
     });
   }
 
@@ -102,7 +124,7 @@ export class PlantsService {
         where: { id },
       });
     } catch (error) {
-      handlePrismaError(error, 'нет такого ID');
+      handlePrismaError(error, 'нет такого ID растения');
     }
   }
 
