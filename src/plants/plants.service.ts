@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePlantDto } from './dto/CreatePlantDto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
@@ -22,23 +22,32 @@ export class PlantsService {
   async isOwnPlant(plantId: string, userId: string) {
     try {
       const plant = await this.findById(plantId);
-       if( plant && plant.userId=== userId){
+      if (plant && plant.userId === userId) {
         return plant;
-       }
+      }
     } catch (error) {
       throw new ForbiddenException('этот пользователь не может вносить изменения тк не является создателем Plant');
     }
   }
 
-// TODO захардкож 2025 заменит ьна текущий
+
   async create(dto: CreatePlantDto, user: User) {
+
     // cоздала Cорт
     const sort = await this.sortService.create(dto.sort);
 
-    const currentSeason = await this.seasonService.findCurrentSeasonByUserId(user.id, '2025');
-
-    if (!currentSeason) {
-      throw new NotFoundException('Сезон не найден (или не создан)');
+    // проверяю, если такой Сезон у Юзера уже есть, то в него создаем Плант. Если передан сезон, которого его нет у Юзера, то создается новый сезо и к нему будет Плант относится.
+    let currentSeason;
+    if (dto.season) {
+      currentSeason = await this.seasonService.findCurrentSeasonByUserId(user.id, dto.season);
+      if (!currentSeason) {
+        const newSeason = {
+          name: dto.season,
+          description: '',
+          user: { connect: { id: user.id } },
+        };
+        currentSeason = await this.seasonService.create(newSeason, user);
+      }
     }
 
     // cоздала Плант с sort.id,
@@ -78,24 +87,31 @@ export class PlantsService {
       if (dto.sort) {
         sortData = await this.sortService.update(dto.sort);
       }
+      const existPlant = await this.findById(dto.plantId);
 
-      const updateData = {
-        dateTime: dto.dateTime?? undefined,
-        kindPlant: dto.kindPlant?? undefined,
-        isPerennial: dto.isPerennial?? undefined,
-        sortId: sortData.id ?? undefined,
-        locationText:dto.locationText ?? undefined,
-        result: dto.result ?? undefined,
+      if (!existPlant) {
+        throw new ConflictException("Нет такого Плант");
       }
 
+      const updateData = {
+        dateTime: dto.dateTime ? dto.dateTime :existPlant.dateTime,
+        kindPlant: dto.kindPlant ? dto.kindPlant :existPlant.kindPlant,
+        isPerennial: dto.isPerennial ? dto.isPerennial :existPlant.isPerennial,
+        sortId: sortData?.id ?? existPlant.sortId,
+        locationText: dto.locationText ?dto.locationText :existPlant.locationText,
+        result: dto.result ?dto.result :existPlant.result,
+      };
+
+
       return this.prismaService.plant.update({
-        where:{id:dto.plantId},
-        data: updateData});
+        where: { id: dto.plantId },
+        data: updateData,
+      });
     }
   }
 
 
-// TODO этот метод надо с SSR сделать для фронтенда
+// TODO этот метод должен быть SSR для фронтенд
   async findAll() {
     return this.prismaService.plant.findMany({
       orderBy: { createdAt: 'desc' },
@@ -111,7 +127,7 @@ export class PlantsService {
     try {
       return this.prismaService.plant.findUnique({
         where: { id },
-        select: { events: { orderBy: { createdAt: 'desc' } } },
+        include: { events: { orderBy: { createdAt: 'desc' } } },
       });
     } catch (error) {
       handlePrismaError(error, 'нет такого ID');

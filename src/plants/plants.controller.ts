@@ -41,6 +41,7 @@ export class PlantsController {
     return this.plantsService.findAll();
   }
 
+  //получить по ИД Плант весь Плант с массивом Евентов
   @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   findById(@Param('id') id: string) {

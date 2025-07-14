@@ -1,7 +1,6 @@
 import { IsBoolean, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Kind } from '@prisma/client';
 import { Type } from 'class-transformer';
-import { CreateSortDTO } from 'src/sort/dto/create-sort.dto';
 import { UpdateSotrDto } from 'src/sort/dto/update-sort.dto';
 
 export class UpdatePlantDto {
@@ -15,7 +14,7 @@ export class UpdatePlantDto {
 
   @IsOptional()
   @IsBoolean()
-  isPerennial?: boolean
+  isPerennial?: boolean;
 
   @IsOptional()
   @ValidateNested()
@@ -24,11 +23,9 @@ export class UpdatePlantDto {
 
   @IsOptional()
   @IsString()
-  locationText? :string
+  locationText?: string;
 
   @IsOptional()
   @IsString()
-  result? :string
-
-
+  result?: string;
 }
