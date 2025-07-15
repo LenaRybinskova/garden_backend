@@ -7,7 +7,7 @@ meta:
     version: 20.18.3
 build:
   skip: false
-  additionalCommands: pnpm run prisma:generate
+  additionalCommands: npm run prisma:generate
   artifacts:
     '*': /
 run:
