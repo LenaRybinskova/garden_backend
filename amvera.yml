@@ -1,7 +1,7 @@
 meta:
   environment: node
   toolchain:
-    name: pnpm
+    name: npm
     version: 20.18.3
 build:
   artifacts:
