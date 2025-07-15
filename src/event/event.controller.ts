@@ -4,6 +4,7 @@ import { CreateEventDTO } from 'src/event/dto/CreateEvent.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { User } from '@prisma/client';
+import { UpdateEventDTO } from 'src/event/dto/UpdateEvent.dto';
 
 
 @Controller('event')
@@ -29,9 +30,10 @@ export class EventController {
     return this.eventService.create({ ...dto, plantId, userId: user.id });
   }
 
+  // id event получаем
   @UseGuards(AuthGuard('jwt'))
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: CreateEventDTO) {
+  update(@Param('id') id: string, @Body() dto: UpdateEventDTO) {
     return this.eventService.update(id, dto);
   }
 

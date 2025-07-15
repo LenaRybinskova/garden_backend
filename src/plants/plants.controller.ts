@@ -35,12 +35,13 @@ export class PlantsController {
     return this.plantsService.update({ ...dto, plantId: id, user});
   }
 
-  @UseGuards(AuthGuard('jwt'))
+// Публичный метод чтобы получить все Плант и Евенты
   @Get()
   findAll() {
     return this.plantsService.findAll();
   }
 
+  //получить по ИД Плант весь Плант с массивом Евентов
   @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   findById(@Param('id') id: string) {

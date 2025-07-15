@@ -9,6 +9,7 @@ import { AuthGuard } from '@nestjs/passport';
 export class SeasonController {
   constructor(private readonly seasonService: SeasonService) {}
 
+  // получить все сезоны Юзера по его ИД
   @UseGuards(AuthGuard('jwt'))
   @Get()
   async findByUserId(@GetUser() user: User) {

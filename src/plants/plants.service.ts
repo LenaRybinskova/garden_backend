@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePlantDto } from './dto/CreatePlantDto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
@@ -19,19 +19,41 @@ export class PlantsService {
   ) {
   }
 
+  async isOwnPlant(plantId: string, userId: string) {
+    try {
+      const plant = await this.findById(plantId);
+      if (plant && plant.userId === userId) {
+        return plant;
+      }
+    } catch (error) {
+      throw new ForbiddenException('этот пользователь не может вносить изменения тк не является создателем Plant');
+    }
+  }
+
+
   async create(dto: CreatePlantDto, user: User) {
+
     // cоздала Cорт
     const sort = await this.sortService.create(dto.sort);
 
-    const currentSeason = await this.seasonService.findCurrentSeasonByUserId(user.id, '2025');
-
-    if (!currentSeason) {
-      throw new NotFoundException('Сезон не найден (или не создан)');
+    // проверяю, если такой Сезон у Юзера уже есть, то в него создаем Плант. Если передан сезон, которого его нет у Юзера, то создается новый сезо и к нему будет Плант относится.
+    let currentSeason;
+    if (dto.season) {
+      currentSeason = await this.seasonService.findCurrentSeasonByUserId(user.id, dto.season);
+      if (!currentSeason) {
+        const newSeason = {
+          name: dto.season,
+          description: '',
+          user: { connect: { id: user.id } },
+        };
+        currentSeason = await this.seasonService.create(newSeason, user);
+      }
     }
 
     // cоздала Плант с sort.id,
     const plant = await this.prismaService.plant.create({
       data: {
+        dateTime: dto.dateTime,
         kindPlant: dto.kindPlant,
         isPerennial: dto.isPerennial,
         userId: user.id,
@@ -54,34 +76,50 @@ export class PlantsService {
     return plant;
   }
 
+  // Изменять Плант может только тот, кто его создавал
   async update(dto: UpdatePlantDto & { plantId: string, user: User }) {
+    const currentUserIsOwnerPlant = await this.isOwnPlant(dto.plantId, dto.user.id);
 
-    // Изменять Плант может только тот, кто его создавал
-    try{
-      // нашли Плант
-      const plant = await this.findById(dto.plantId)
+    if (currentUserIsOwnerPlant) {
+      // если что то в Сорте надо изменить, то снчала делаепм изм в Сорт, потом в Плант
+      let sortData;
 
-      // проверка, у этого Плант создатель этот юзер который запрос направляет ?
-      if(plant){
-        if( plant.userId===dto.user.id)
-        {
-
-          return this.prismaService.plant.update({where:{id: plant.id},data:{
-              kindPlant: dto.kindPlant,
-              sort:dto.sort
-            })
-        }
+      if (dto.sort) {
+        sortData = await this.sortService.update(dto.sort);
       }
-    }
+      const existPlant = await this.findById(dto.plantId);
+
+      if (!existPlant) {
+        throw new ConflictException("Нет такого Плант");
+      }
+
+      const updateData = {
+        dateTime: dto.dateTime ? dto.dateTime :existPlant.dateTime,
+        kindPlant: dto.kindPlant ? dto.kindPlant :existPlant.kindPlant,
+        isPerennial: dto.isPerennial ? dto.isPerennial :existPlant.isPerennial,
+        sortId: sortData?.id ?? existPlant.sortId,
+        locationText: dto.locationText ?dto.locationText :existPlant.locationText,
+        result: dto.result ?dto.result :existPlant.result,
+      };
 
 
-    catch(err){
-        throw new ForbiddenException("этот пользователь не может вносить изменения тк не является создателем Plant")
+      return this.prismaService.plant.update({
+        where: { id: dto.plantId },
+        data: updateData,
+      });
     }
   }
+
+
+// TODO этот метод должен быть SSR для фронтенд
   async findAll() {
     return this.prismaService.plant.findMany({
       orderBy: { createdAt: 'desc' },
+      include: {
+        events: {
+          orderBy: { createdAt: 'desc' },
+        },
+      },
     });
   }
 
@@ -89,7 +127,7 @@ export class PlantsService {
     try {
       return this.prismaService.plant.findUnique({
         where: { id },
-        select: { events: { orderBy: { createdAt: 'desc' } } },
+        include: { events: { orderBy: { createdAt: 'desc' } } },
       });
     } catch (error) {
       handlePrismaError(error, 'нет такого ID');
@@ -102,7 +140,7 @@ export class PlantsService {
         where: { id },
       });
     } catch (error) {
-      handlePrismaError(error, 'нет такого ID');
+      handlePrismaError(error, 'нет такого ID растения');
     }
   }
 

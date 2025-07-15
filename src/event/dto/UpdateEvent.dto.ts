@@ -1,9 +1,10 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { WorkType } from '@prisma/client';
 
-export class CreateEventDTO {
+export class UpdateEventDTO {
   @IsString()
-  dateTime: string;
+  @IsOptional()
+  dateTime?: string;
 
   @IsEnum(WorkType)
   workType?: WorkType = WorkType.SEEDING;
@@ -19,6 +20,4 @@ export class CreateEventDTO {
   @IsString()
   @IsOptional()
   photoBase64?: string;
-
-
 }

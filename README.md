@@ -6,6 +6,8 @@ npx prisma migrate dev --name update-schema
 
 nest g res plants - созд модуль
 
+pnpm run seed:weather
+
 netstat -ano | findstr :3000
 
 taskkill /PID 12345 /F
