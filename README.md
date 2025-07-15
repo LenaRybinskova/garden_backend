@@ -1,5 +1,18 @@
 PNPM
 
+npx prisma generate - сгенерировать Призма Клиент
+
+npx prisma migrate dev --name update-schema 
+
+nest g res plants - созд модуль
+
+pnpm run seed:weather
+
+netstat -ano | findstr :3000
+
+taskkill /PID 12345 /F
+
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>

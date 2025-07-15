@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+  //  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+model Season {
+  id          String @id @default(uuid())
+  name        String @default("2025")
+  description String @default("")
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  plant Plant[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Season")
+}
+
+model Plant {
+  id        String  @id @default(uuid())
+  dateTime  String? // 2025-07-08
+  kindPlant Kind    @default(VEGETABLE)
+
+  isPerennial Boolean? @default(false)
+
+  // One to many
+  userId String?
+  users  User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // One to One
+  sortId String @unique
+  sort   Sort   @relation(fields: [sortId], references: [id], onDelete: Cascade)
+
+  // One to many
+  events Event[] @relation()
+
+  season       Season[]
+  locationText String?
+  result       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Plant")
+}
+
+model Sort {
+  id                  String   @id @default(uuid())
+  name                String
+  userDescription     String?
+  producerDescription String?
+  photoPackageBase64  String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // One to One
+  Plant Plant?
+
+  @@map("Sort")
+}
+
+// разновидность растения( фрукт, овощ, трава, цветы, кусты, деревья)
+enum Kind {
+  FRUIT
+  VEGETABLE
+  HERB
+  FLOWER
+  SHRUB
+  TREE
+}
+
+model User {
+  id       String   @id @default(uuid())
+  login    String
+  email    String   @unique
+  password String
+  role     Role     @default(USER)
+  plants   Plant[]
+  events   Event[]
+  season   Season[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("User")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  dateTime    String? // 2025-07-08
+  workType    WorkType @default(SEEDING)
+  moonPhase   String?
+  description String?
+  photoBase64 String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  plantId String
+  plant   Plant  @relation(fields: [plantId], references: [id], onDelete: Cascade)
+
+  weatherId String
+  weather   Weather @relation(fields: [weatherId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Event")
+}
+
+model Weather {
+  id          String  @id @default(uuid())
+  dateTime    String  @unique // 2025-07-08 @unique
+  AM3         String?
+  PM3         String?
+  description String?
+
+  event Event[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum WorkType {
+  PHOTO
+  SEEDING
+  PICKING
+  PLANTING
+  FERTILIZING
+  TRANSFER
+  PRUNING
+}
