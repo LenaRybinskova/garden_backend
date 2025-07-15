@@ -1,3 +1,4 @@
+---
 version: null
 meta:
   environment: node
@@ -8,7 +9,7 @@ build:
   skip: false
   additionalCommands: npm run prisma:generate
   artifacts:
-    "*": /
+    '*': /
 run:
   scriptName: src/main.ts
   scriptArguments: null
@@ -16,4 +17,3 @@ run:
   command: ""
   persistenceMount: /data
   containerPort: 3000
-
