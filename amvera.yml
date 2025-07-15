@@ -4,9 +4,16 @@ meta:
     name: npm
     version: 20.18.3
 build:
+  skip: false
+  additionalCommands: null
   artifacts:
-    '*': /
-  command: nest start
+    "*": /
 run:
+  scriptName: src/main.ts
+  scriptArguments: null
+  nodeArguments: null
+  command: ""
   persistenceMount: /data
-  containerPort: 3000
+  containerPort: "3000"
+  servicePort: "80"
+
