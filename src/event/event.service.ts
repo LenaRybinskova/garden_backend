@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateEventDTO } from 'src/event/dto/CreateEvent.dto';
-import { User } from '@prisma/client';
 import { UpdateEventDTO } from 'src/event/dto/UpdateEvent.dto';
 
 @Injectable()
 export class EventService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) {
+  }
 
   async findAll() {
     return this.prismaService.event.findMany({
@@ -41,31 +41,16 @@ export class EventService {
     }
   }
 
+
+  //TODO надо предумотреть чтобы можно было исторические данные по погоде подтягивать
   async create(dto: CreateEventDTO & { plantId: string; userId: string }) {
     const today = new Date().toISOString().split('T')[0]; // "2025-07-07"
 
     let weather;
-    if(dto.dateTime ===today) {
-      //ищем запись о Погоде на сегдня
-       weather = await this.prismaService.weather.findUnique({
-        where: { dateTime: today },
-      });
 
-      // Если не нашли — создаём новую
-      if (!weather) {
-        weather = await this.prismaService.weather.create({
-          data: {
-            dateTime: today,
-          },
-        });
-      }
-    } else{
-      // надо в Погоде искать погоду на дату на которую я создаю Евент( для случаев, когда я задним числом создаю евент и должна подвязать Погоду)
-      weather = this.prismaService.weather.findUnique({
-        where: { dateTime: dto.dateTime },
-    }
-    }
-
+    weather = await this.prismaService.weather.findUnique({
+      where: { dateTime: dto.dateTime },
+    });
 
     // Создаём событие
     return this.prismaService.event.create({
@@ -81,6 +66,50 @@ export class EventService {
       },
     });
   }
+
+  /*async create(dto: CreateEventDTO & { plantId: string; userId: string }) {
+    const today = new Date().toISOString().split('T')[0]; // "2025-07-07"
+
+    let weather;
+    if (dto.dateTime === today) {
+      console.log("dto.dateTime === today", dto.dateTime === today)
+      //ищем запись о Погоде на сегдня
+      weather = await this.prismaService.weather.findUnique({
+        where: { dateTime: today },
+      });
+
+      // Если не нашли — создаём новую
+      if (!weather) {
+        console.log("!weather")
+        weather = await this.prismaService.weather.create({
+          data: {
+            dateTime: today,
+          },
+        });
+        console.log()
+      }
+    } else {
+      // надо в Погоде искать погоду на дату на которую я создаю Евент( для случаев, когда я задним числом создаю евент и должна подвязать Погоду)
+      weather = this.prismaService.weather.findUnique({
+        where: { dateTime: dto.dateTime },
+      })
+    }
+
+
+    // Создаём событие
+    return this.prismaService.event.create({
+      data: {
+        dateTime: dto.dateTime,
+        workType: dto.workType,
+        moonPhase: dto.moonPhase,
+        description: dto.description,
+        photoBase64: dto.photoBase64,
+        plantId: dto.plantId,
+        userId: dto.userId,
+        weatherId: weather.id ,
+      },
+    });
+  }*/
 
   async delete(id: string) {
     try {
