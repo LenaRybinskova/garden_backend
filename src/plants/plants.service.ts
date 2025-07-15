@@ -1,4 +1,4 @@
-import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
 import { CreatePlantDto } from './dto/CreatePlantDto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
@@ -39,7 +39,10 @@ export class PlantsService {
     // проверяю, если такой Сезон у Юзера уже есть, то в него создаем Плант. Если передан сезон, которого его нет у Юзера, то создается новый сезо и к нему будет Плант относится.
     let currentSeason;
     if (dto.season) {
-      currentSeason = await this.seasonService.findCurrentSeasonByUserId(user.id, dto.season);
+      currentSeason = await this.seasonService.findCurrentSeasonByUserId(
+        user.id,
+        dto.season,
+      );
       if (!currentSeason) {
         const newSeason = {
           name: dto.season,
@@ -90,16 +93,16 @@ export class PlantsService {
       const existPlant = await this.findById(dto.plantId);
 
       if (!existPlant) {
-        throw new ConflictException("Нет такого Плант");
+        throw new ConflictException('Нет такого Плант');
       }
 
       const updateData = {
-        dateTime: dto.dateTime ? dto.dateTime :existPlant.dateTime,
-        kindPlant: dto.kindPlant ? dto.kindPlant :existPlant.kindPlant,
-        isPerennial: dto.isPerennial ? dto.isPerennial :existPlant.isPerennial,
+        dateTime: dto.dateTime ? dto.dateTime : existPlant.dateTime,
+        kindPlant: dto.kindPlant ? dto.kindPlant : existPlant.kindPlant,
+        isPerennial: dto.isPerennial ? dto.isPerennial : existPlant.isPerennial,
         sortId: sortData?.id ?? existPlant.sortId,
-        locationText: dto.locationText ?dto.locationText :existPlant.locationText,
-        result: dto.result ?dto.result :existPlant.result,
+        locationText: dto.locationText ? dto.locationText : existPlant.locationText,
+        result: dto.result ? dto.result : existPlant.result,
       };
 
 
