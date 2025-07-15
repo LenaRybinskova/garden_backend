@@ -1,3 +1,5 @@
+---
+version: null
 meta:
   environment: node
   toolchain:
@@ -7,13 +9,12 @@ build:
   skip: false
   additionalCommands: null
   artifacts:
-    "*": /
+    '*': /
 run:
   scriptName: src/main.ts
   scriptArguments: null
   nodeArguments: null
   command: ""
   persistenceMount: /data
-  containerPort: "3000"
-  servicePort: "80"
-
+  containerPort: 3000
+  servicePort: 80
