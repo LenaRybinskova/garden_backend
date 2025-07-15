@@ -1,0 +1,12 @@
+meta:
+  environment: node
+  toolchain:
+    name: pnpm
+    version: 20.18.3
+build:
+  artifacts:
+    '*': /
+  command: nest start
+run:
+  persistenceMount: /data
+  containerPort: 3000
