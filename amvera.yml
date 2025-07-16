@@ -1,19 +1,21 @@
----
 version: null
 meta:
   environment: node
   toolchain:
     name: npm
     version: 20.18.3
+
 build:
   skip: false
-  additionalCommands: npm run prisma:generate
+  additionalCommands: |
+    npm install
+    npm run prisma:generate
+    npx prisma migrate deploy
+    npm run build
   artifacts:
-    '*': /
+    "*": /
+
 run:
-  scriptName: src/main.ts
-  scriptArguments: null
-  nodeArguments: null
-  command: ""
+  command: "npm run start:prod"
   persistenceMount: /data
   containerPort: 3000

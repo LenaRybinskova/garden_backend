@@ -17,6 +17,7 @@ async function bootstrap() {
   //   origin: ['https://your-next-app.com'],
   //   credentials: true,
   // }); // если фронтенд на др домене чтобы отобр статика
-  await app.listen(process.env.PORT ?? 3000);
+  // await app.listen(process.env.PORT ?? 3000); исправила для Амвера
+  await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }
 bootstrap();

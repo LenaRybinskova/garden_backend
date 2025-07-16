@@ -12,6 +12,8 @@ netstat -ano | findstr :3000
 
 taskkill /PID 12345 /F
 
+git pull amvera master
+
 git push amvera main:master
 
 
