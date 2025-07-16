@@ -7,9 +7,14 @@ meta:
     version: 20.18.3
 build:
   skip: false
-  additionalCommands: echo "=== Установка зависимостей ===" && npm install && echo
-    "=== Генерация Prisma Client ===" && npm run prisma:generate && echo "=== Применение
-    миграций ===" && npx prisma migrate deploy && echo "=== Сборка проекта ===" &&
+  additionalCommands: |
+    echo "=== Установка зависимостей ==="
+    npm install
+    echo "=== Генерация Prisma Client ==="
+    npm run prisma:generate
+    echo "=== Применение миграций ==="
+    npx prisma migrate deploy
+    echo "=== Сборка проекта ==="
     npm run build
   artifacts:
     '*': /
