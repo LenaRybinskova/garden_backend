@@ -7,18 +7,10 @@ meta:
     version: 20.18.3
 build:
   skip: false
-  additionalCommands: |
-    echo "=== Установка зависимостей ==="
-    npm install
-    echo "=== Генерация Prisma Client ==="
-    npm run prisma:generate
-    echo "=== Применение миграций ==="
-    npx prisma migrate deploy
-    echo "=== Сборка проекта ==="
-    npm run build
+  additionalCommands: npm install && npm run prisma:generate && npm run build
   artifacts:
     '*': /
 run:
-  command: npm run start:prod
+  command: npx prisma migrate deploy && npm run start:prod
   persistenceMount: /data
   containerPort: 3000
