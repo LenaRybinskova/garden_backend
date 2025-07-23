@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRES_URL")
+  url      = env("POSTGRES_URL_AMVERA")
 }
 
 model Season {
@@ -13,6 +13,7 @@ model Season {
   name        String @default("2025")
   description String @default("")
 
+  test   String @default("")
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 

@@ -16,6 +16,12 @@ git pull amvera master
 
 git push amvera main:master
 
+npx prisma migrate reset  # Удалит БД, создаст её заново и применит миграции
+npx prisma migrate dev --name init  # Создаст новую миграцию
+
+node dist/main.js локалка
+node /app/dist/main.js амвера
+
 
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
