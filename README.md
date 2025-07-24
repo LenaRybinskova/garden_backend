@@ -22,6 +22,10 @@ npx prisma migrate dev --name init  # Создаст новую миграцию
 node dist/main.js локалка
 node /app/dist/main.js амвера
 
+command: |
+npx prisma migrate deploy --schema /app/prisma/schema.prisma &&
+node /app/dist/main.js
+
 
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
