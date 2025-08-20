@@ -1,5 +1,7 @@
 PNPM
 
+start dev просто запустить
+
 npx prisma generate - сгенерировать Призма Клиент
 
 npx prisma migrate dev --name update-schema 

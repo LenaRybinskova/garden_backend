@@ -22,11 +22,13 @@ import {
 } from '@nestjs/swagger';
 import { AccessTokenResponseDto } from 'src/auth/dto/AccessTokenRes.dto';
 import { MeAccessResDto } from 'src/auth/dto/MeAccessRes.dto';
+import { AuthRequest } from 'src/auth/interfaces/authMe.interfaces';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {
+  }
 
   @ApiOperation({ summary: 'Регистрация нового пользователя' })
   @ApiBody({
@@ -120,7 +122,11 @@ export class AuthController {
   })
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
-  async me(@Req() req: Request) {
-    return req.user;
+  async me(@Req() req: AuthRequest) {
+    return {
+      id: req.user.id,
+      login: req.user.login,
+      email: req.user.email,
+    };
   }
 }
