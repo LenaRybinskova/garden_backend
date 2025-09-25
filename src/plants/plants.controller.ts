@@ -32,10 +32,10 @@ export class PlantsController {
     @Body() dto: UpdatePlantDto,
     @GetUser() user: User,
   ) {
-    return this.plantsService.update({ ...dto, plantId: id, user});
+    return this.plantsService.update({ ...dto, plantId: id, user });
   }
 
-// Публичный метод чтобы получить все Плант и Евенты
+  // Публичный метод чтобы получить все Плант и Евенты
   @Get()
   findAll() {
     return this.plantsService.findAll();

@@ -1,4 +1,10 @@
-import { IsBoolean, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Kind } from '@prisma/client';
 import { Type } from 'class-transformer';
 import { UpdateSotrDto } from 'src/sort/dto/update-sort.dto';

@@ -19,6 +19,4 @@ export class CreateEventDTO {
   @IsString()
   @IsOptional()
   photoBase64?: string;
-
-
 }

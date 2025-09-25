@@ -37,7 +37,9 @@ export class AuthService {
   }
 
   //поиск юзера по ID
-  async validateUser(id: string,): Promise<Pick<User, 'id' | 'login' | 'email'>> {
+  async validateUser(
+    id: string,
+  ): Promise<Pick<User, 'id' | 'login' | 'email'>> {
     const user = await this.prismaService.user.findUnique({
       where: { id },
     });

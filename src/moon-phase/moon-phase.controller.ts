@@ -3,8 +3,7 @@ import { MoonPhaseService } from './moon-phase.service';
 
 @Controller('moon-phase')
 export class MoonPhaseController {
-  constructor(private readonly moonPhaseService: MoonPhaseService) {
-  }
+  constructor(private readonly moonPhaseService: MoonPhaseService) {}
 
   //@UseGuards(AuthGuard('jwt'))
   @Get()

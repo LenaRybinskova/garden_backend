@@ -10,7 +10,6 @@ import { ConfigModule } from '@nestjs/config';
   providers: [MoonPhaseService],
   imports: [PrismaModule, HttpModule, ConfigModule],
 })
-export class MoonPhaseModule {
-}
+export class MoonPhaseModule {}
 
 //  providers: [MoonPhaseService, ConfigService],

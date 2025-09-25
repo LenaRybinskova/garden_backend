@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { EventService } from './event.service';
 import { CreateEventDTO } from 'src/event/dto/CreateEvent.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -6,11 +15,9 @@ import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { User } from '@prisma/client';
 import { UpdateEventDTO } from 'src/event/dto/UpdateEvent.dto';
 
-
 @Controller('event')
 export class EventController {
-  constructor(private readonly eventService: EventService) {
-  }
+  constructor(private readonly eventService: EventService) {}
 
   @UseGuards(AuthGuard('jwt'))
   @Get()
@@ -26,7 +33,11 @@ export class EventController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post(':plantId')
-  create(@Body() dto: CreateEventDTO, @Param('plantId') plantId: string, @GetUser() user: User) {
+  create(
+    @Body() dto: CreateEventDTO,
+    @Param('plantId') plantId: string,
+    @GetUser() user: User,
+  ) {
     return this.eventService.create({ ...dto, plantId, userId: user.id });
   }
 

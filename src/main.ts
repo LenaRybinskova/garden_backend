@@ -14,7 +14,7 @@ async function bootstrap() {
     ],
     credentials: true,
     methods: 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
-  })
+  });
 
   app.useGlobalPipes(new ValidationPipe());
   app.use(cookieParser());

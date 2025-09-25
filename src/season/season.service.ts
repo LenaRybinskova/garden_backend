@@ -5,24 +5,22 @@ import { User } from '@prisma/client';
 
 @Injectable()
 export class SeasonService {
-  constructor(private readonly prismaService: PrismaService) {
-  }
+  constructor(private readonly prismaService: PrismaService) {}
 
   async create(dto: CreateSeasonDto, user: User) {
-    try{
-      const isExist = await this.findCurrentSeasonByUserId(user.id, dto.name)
-      if(!isExist){
+    try {
+      const isExist = await this.findCurrentSeasonByUserId(user.id, dto.name);
+      if (!isExist) {
         return this.prismaService.season.create({
           data: {
             name: dto.name,
             description: dto.description ?? undefined,
             user: { connect: { id: user.id } },
           },
-        })
+        });
       }
-    }
-    catch(err){
-      throw new ConflictException("такой сезон уже существует")
+    } catch (err) {
+      throw new ConflictException('такой сезон уже существует');
     }
   }
 
@@ -32,13 +30,11 @@ export class SeasonService {
     });
   }
 
-// TODO findFirst правильно?? мне надо чтобы возвращался по юзерИД и нейму конкретный Сезон
+  // TODO findFirst правильно?? мне надо чтобы возвращался по юзерИД и нейму конкретный Сезон
   // получить ИД сезона по его названию (название уникально)
- async findCurrentSeasonByUserId(userId: string, name: string) {
+  async findCurrentSeasonByUserId(userId: string, name: string) {
     return this.prismaService.season.findFirst({
       where: { userId: userId, name: name },
     });
   }
-
-
 }

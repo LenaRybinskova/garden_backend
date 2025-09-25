@@ -5,8 +5,7 @@ import { UpdateWeatherDto } from 'src/weather/dto/Update-weather.dto';
 
 @Controller('weather')
 export class WeatherController {
-  constructor(private readonly weatherService: WeatherService) {
-  }
+  constructor(private readonly weatherService: WeatherService) {}
 
   @Post()
   debugCreateWeather(@Body() dto: CreateWeatherDto) {
@@ -20,7 +19,7 @@ export class WeatherController {
 
   //технический метод
   @Get()
-  getWeather(){
+  getWeather() {
     return this.weatherService.getWeather();
   }
 }
