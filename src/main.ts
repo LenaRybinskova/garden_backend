@@ -10,7 +10,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:3000', // Для локальной разработки
-      'https://garden-frontend-lena-3.amvera.io',
+      'https://garden-frontend-upd-lena-3.amvera.io',
     ],
     credentials: true,
     methods: 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
