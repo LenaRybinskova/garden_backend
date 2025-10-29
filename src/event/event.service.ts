@@ -3,13 +3,17 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateEventDTO } from 'src/event/dto/CreateEvent.dto';
 import { UpdateEventDTO } from 'src/event/dto/UpdateEvent.dto';
 import { WeatherService } from 'src/weather/weather.service';
+import { PhotoValidationService } from 'src/photo/photoValidation.service';
 
 @Injectable()
 export class EventService {
+
   constructor(
     private readonly prismaService: PrismaService,
     private readonly weatherService: WeatherService,
-  ) {}
+    private readonly photoValidationService: PhotoValidationService,
+  ) {
+  }
 
   async findAll() {
     return this.prismaService.event.findMany({
@@ -28,7 +32,6 @@ export class EventService {
     const existEvent = await this.prismaService.event.findUnique({
       where: { id: id },
     });
-    console.log('update event:', existEvent);
 
     if (existEvent) {
       return this.prismaService.event.update({
@@ -50,78 +53,32 @@ export class EventService {
 
   //TODO надо предумотреть чтобы можно было исторические данные по погоде подтягивать
   async create(dto: CreateEventDTO & { plantId: string; userId: string }) {
-    const today = new Date().toISOString().split('T')[0]; // "2025-07-07"
+    const dateTime = dto.dateTime || new Date().toISOString().split('T')[0];
 
-    let weather;
+    const weather =
+      (await this.weatherService.isWeatherExistsForDate(dateTime)) ||
+      (await this.weatherService.getWeather());
 
-    weather = await this.prismaService.weather.findUnique({
-      where: { dateTime: dto.dateTime },
-    });
-
-    if (!weather) {
-      weather = await this.weatherService.getWeather();
+    //проверяем, что фото то точно фото и размер
+    let validPhotoBase64: string | undefined;
+    if (dto.photoBase64) {
+      validPhotoBase64 = await this.photoValidationService.validatePhoto(dto.photoBase64);
     }
-    console.log('weather', weather);
 
     // Создаём событие
     return this.prismaService.event.create({
       data: {
-        dateTime: dto.dateTime,
+        dateTime: dateTime,
         workType: dto.workType,
         moonPhase: dto.moonPhase,
         description: dto.description,
-        photoBase64: dto.photoBase64,
+        photoBase64: validPhotoBase64,
         plantId: dto.plantId,
         userId: dto.userId,
-        /*        weatherId: weather != null ? weather.id : null,*/
         weatherId: weather.id,
       },
     });
   }
-
-  /*async create(dto: CreateEventDTO & { plantId: string; userId: string }) {
-      const today = new Date().toISOString().split('T')[0]; // "2025-07-07"
-
-      let weather;
-      if (dto.dateTime === today) {
-        console.log("dto.dateTime === today", dto.dateTime === today)
-        //ищем запись о Погоде на сегдня
-        weather = await this.prismaService.weather.findUnique({
-          where: { dateTime: today },
-        });
-
-        // Если не нашли — создаём новую
-        if (!weather) {
-          console.log("!weather")
-          weather = await this.prismaService.weather.create({
-            data: {
-              dateTime: today,
-            },
-          });
-          console.log()
-        }
-      } else {
-        // надо в Погоде искать погоду на дату на которую я создаю Евент( для случаев, когда я задним числом создаю евент и должна подвязать Погоду)
-        weather = this.prismaService.weather.findUnique({
-          where: { dateTime: dto.dateTime },
-        })
-      }
-
-
-      // Создаём событие
-      return this.prismaService.event.create({
-        data: {
-          dateTime: dto.dateTime,
-          workType: dto.workType,
-          moonPhase: dto.moonPhase,
-          description: dto.description,
-          photoBase64: dto.photoBase64,
-          plantId: dto.plantId,
-          userId: dto.userId,
-          weatherId: weather.id ,
-        },
-      });
-    }*/
 
   async delete(id: string) {
     try {

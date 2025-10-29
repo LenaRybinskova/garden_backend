@@ -12,6 +12,7 @@ import { MoonPhaseModule } from './moon-phase/moon-phase.module';
 import { SeasonModule } from './season/season.module';
 import { WeatherModule } from './weather/weather.module';
 import { join } from 'path';
+import { PhotoModule } from './photo/photo.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { join } from 'path';
     MoonPhaseModule,
     SeasonModule,
     WeatherModule,
+    PhotoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

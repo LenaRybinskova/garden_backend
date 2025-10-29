@@ -12,7 +12,8 @@ import { Type } from 'class-transformer';
 
 export class CreatePlantDto {
   @IsString()
-  dateTime: string;
+  @IsOptional()
+  dateTime?: string;
 
   @IsEnum(Kind)
   kindPlant: Kind;

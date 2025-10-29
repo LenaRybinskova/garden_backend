@@ -6,6 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateWeatherDto } from 'src/weather/dto/Create-weather.dto';
 import { Cron } from '@nestjs/schedule';
 import { UpdateWeatherDto } from 'src/weather/dto/Update-weather.dto';
+import { Weather } from '@prisma/client';
 
 @Injectable()
 export class WeatherService {
@@ -13,16 +14,27 @@ export class WeatherService {
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
     private readonly prismaService: PrismaService,
-  ) {}
+  ) {
+  }
 
-  async getWeather() {
+  // проверка, на эту дату существует запись с погодой?
+  async isWeatherExistsForDate(dateTime: string) {
+    const isExist = await this.prismaService.weather.findUnique({
+      where: { dateTime: dateTime },
+    });
+
+    if (!isExist) {
+      return null;
+    }
+    return isExist;
+  }
+
+  async getWeather(): Promise<Weather> {
     const today = new Date();
     const dateStr = today.toISOString().split('T')[0]; //2025-07-07
     const location = 'Moscow';
 
-    const existing = await this.prismaService.weather.findFirst({
-      where: { dateTime: dateStr },
-    });
+    const existing = await this.isWeatherExistsForDate(dateStr);
 
     try {
       const params = {

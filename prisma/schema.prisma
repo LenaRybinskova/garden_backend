@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRES_URL_AMVERA")
+  url      = env("POSTGRES_URL_LOCAL")
 }
 
 model Season {
@@ -37,8 +37,8 @@ model Plant {
   users  User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // One to One
-  sortId String @unique
-  sort   Sort   @relation(fields: [sortId], references: [id], onDelete: Cascade)
+  sortId String? @unique // Добавил ?
+  sort   Sort?   @relation(fields: [sortId], references: [id], onDelete: Cascade)
 
   // One to many
   events Event[] @relation()

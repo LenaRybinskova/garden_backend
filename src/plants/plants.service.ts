@@ -12,7 +12,6 @@ import { handlePrismaError } from 'src/common/utils/handlePrismaError';
 import { SeasonService } from 'src/season/season.service';
 import { UpdatePlantDto } from 'src/plants/dto/UpdatePlant.dto';
 
-
 @Injectable()
 export class PlantsService {
   constructor(
@@ -36,6 +35,9 @@ export class PlantsService {
   }
 
   async create(dto: CreatePlantDto, user: User) {
+    // если дату не передаем, то текущая
+    const dateTime = dto.dateTime || new Date().toISOString().split('T')[0];
+
     // cоздала Cорт
     const sort = await this.sortService.create(dto.sort);
 
@@ -46,6 +48,7 @@ export class PlantsService {
         user.id,
         dto.season,
       );
+
       if (!currentSeason) {
         const newSeason = {
           name: dto.season,
@@ -59,7 +62,7 @@ export class PlantsService {
     // cоздала Плант с sort.id,
     const plant = await this.prismaService.plant.create({
       data: {
-        dateTime: dto.dateTime,
+        dateTime: dateTime,
         kindPlant: dto.kindPlant,
         isPerennial: dto.isPerennial,
         userId: user.id,

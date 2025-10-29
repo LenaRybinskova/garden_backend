@@ -7,8 +7,8 @@ export class MoonPhaseController {
 
   //@UseGuards(AuthGuard('jwt'))
   @Get()
-  getMoonPhase() {
-    return this.moonPhaseService.getMoonPhase();
+  async getMoonPhase() {
+    return await this.moonPhaseService.getMoonPhase();
   }
 }
 
