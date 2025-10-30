@@ -11,6 +11,6 @@ build:
   artifacts:
     "*": /
 run:
-  command: npx prisma migrate deploy --schema /app/prisma/schema.prisma && node /app/dist/main.js
+  command: npx prisma migrate deploy --schema /app/prisma/schema.prisma && node /app/dist/src/main.js
   persistenceMount: /data
   containerPort: 3000
