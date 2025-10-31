@@ -4,6 +4,7 @@ import * as cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
 import { setupSwagger } from 'src/utils/swagger-utils';
 import * as bodyParser from 'body-parser';
+import { GlobalFilterException } from 'src/common/utils/handleErrors/globalFilterError';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,6 +23,8 @@ async function bootstrap() {
 
   app.use(bodyParser.json({ limit: '10mb' }));
   app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+  app.useGlobalFilters(new GlobalFilterException());
+
   //app.enableCors({
   //   origin: ['https://your-next-app.com'],
   //   credentials: true,
@@ -29,4 +32,5 @@ async function bootstrap() {
   // await app.listen(process.env.PORT ?? 3000); исправила для Амвера
   await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }
+
 bootstrap();

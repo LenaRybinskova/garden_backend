@@ -119,7 +119,7 @@ export class AuthService {
     const isValidPassword = await verify(existUser.password, password);
 
     if (!isValidPassword) {
-      throw new NotFoundException('User not exists'); //404
+      throw new NotFoundException('Validation error'); //404
     }
 
     return this.auth(res, existUser.id);
